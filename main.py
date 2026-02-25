@@ -1,5 +1,6 @@
 from auth.register import register
 from auth.login import login
+from profile_management import profile_menu
 
 def main():
     while True:
@@ -14,16 +15,18 @@ def main():
             continue
 
         choice = int(choice)
+
         if choice == 1:
-            register()
+            username, role = register()  # auto-login
+            if username and role:
+                print(f"🎉 Automatically logged in as {username} ({role})!")
+                profile_menu(username)
         elif choice == 2:
-            role = login()
-            if role == "student":
-                print("🎮 Welcome Student!")
-            elif role == "admin":
-                print("👑 Welcome Admin!")
+            username, role = login()
+            if role:
+                profile_menu(username)
         elif choice == 3:
-            print("Exiting...")
+            print("Exiting system...")
             break
         else:
             print("❌ Please choose 1-3 only")

@@ -1,5 +1,4 @@
 import os
-from auth.validation.user_validation import validate_username
 
 FILE_NAME = "users.txt"
 
@@ -11,7 +10,7 @@ def login():
 
     if not os.path.exists(FILE_NAME):
         print("❌ No users registered yet.")
-        return None
+        return None, None
 
     with open(FILE_NAME, "r") as file:
         for line in file:
@@ -22,7 +21,7 @@ def login():
 
             if username == stored_username and password == stored_password:
                 print(f"✅ Login successful! Role: {role}\n")
-                return role
+                return username, role
 
     print("❌ Invalid username or password.")
-    return None
+    return None, None
