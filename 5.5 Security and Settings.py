@@ -1,30 +1,27 @@
-import sqlite3
+import os
 
 class SecuritySystem:
-    def __init__(self, db_name="security_settings.db"):
-        self.conn = sqlite3.connect(db_name)
-        self.cursor = self.conn.cursor()
-        self._init_db()
+    def __init__(self):
+        
+        self.settings_file = "admin_profiles/settings.txt"
         self.current_user = None
+        self._init_settings()
 
-    def _init_db(self):
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS system_settings (
-                setting_key TEXT PRIMARY KEY,
-                setting_value TEXT
-            )
-        ''')
-        default_settings = [
-            ('system_name', 'Learning Management System'),
-            ('enable_leaderboard', 'True'),
-            ('max_quiz_attempts', '3')
-        ]
-        self.cursor.executemany("INSERT OR IGNORE INTO system_settings VALUES (?, ?)", default_settings)
-        self.conn.commit()
+    def _init_settings(self):
+        
+        if not os.path.exists("admin_profiles"):
+            os.makedirs("admin_profiles")
+        
+        if not os.path.exists(self.settings_file):
+            default_settings = {
+                "system_name": "Learning Management System",
+                "enable_leaderboard": "True",
+                "max_quiz_attempts": "3"
+            }
+            self._save_all_settings(default_settings)
 
     
-    
-    @staticmethod  
+    @staticmethod
     def access_control(allowed_roles):
         def decorator(func):
             def wrapper(self, *args, **kwargs):
@@ -33,65 +30,74 @@ class SecuritySystem:
                     print("❌ Access Denied: Please login first.")
                     return
                 
-                if self.current_user['role'] in allowed_roles:
+                
+                user_role = self.current_user.get('user_type', '').lower()
+                
+                allowed_roles_lower = [r.lower() for r in allowed_roles]
+                
+                if user_role in allowed_roles_lower:
                     return func(self, *args, **kwargs)
                 else:
-                    print(f"🚫 Permission Denied: {self.current_user['role']} cannot access this.")
+                    print(f"🚫 Permission Denied: {user_role} cannot access this.")
             return wrapper
         return decorator
 
+    def set_session(self, user_dict):
+        
+        self.current_user = user_dict
+        if user_dict:
+            print(f"\n[Session] Active user: {user_dict['username']} ({user_dict['user_type']})")
 
-    def login(self, username, role):
-        self.current_user = {"name": username, "role": role}
-        print(f"\n[Login] {username} logged in as {role}")
-
-    @access_control(allowed_roles=["Admin"])
-    def admin_page(self):
-        print("🛠 [admin_page.py] Welcome to Admin Dashboard.")
-
-    @access_control(allowed_roles=["Student"])
-    def student_page(self):
-        print("📖 [student_page.py] Welcome to Student Portal.")
-
-    @access_control(allowed_roles=["Lecturer", "Admin"])
-    def add_course(self):
-        print("📝 Course content added successfully.")
-
-   
-
-    @access_control(allowed_roles=["Admin"])
+    @access_control(allowed_roles=["admin"])
     def update_setting(self, key, value):
-        self.cursor.execute("UPDATE system_settings SET setting_value = ? WHERE setting_key = ?", (str(value), key))
-        self.conn.commit()
-        print(f"⚙️ Config Updated: {key} = {value}")
+      
+        settings = self._load_all_settings()
+        settings[key] = str(value)
+        self._save_all_settings(settings)
+        
+       
+        print(f"⚙️ Config Updated in {self.settings_file}: {key} = {value}")
 
     def get_setting(self, key):
-        self.cursor.execute("SELECT setting_value FROM system_settings WHERE setting_key = ?", (key,))
-        result = self.cursor.fetchone()
-        return result[0] if result else None
+      
+        settings = self._load_all_settings()
+        return settings.get(key)
 
     def view_all_settings(self):
-        print("\n--- Current System Configuration ---")
-        self.cursor.execute("SELECT * FROM system_settings")
-        for row in self.cursor.fetchall():
-            print(f"{row[0]}: {row[1]}")
+        
+        settings = self._load_all_settings()
+        print("\n--- Current System Configuration (from TXT) ---")
+        for k, v in settings.items():
+            print(f"{k}: {v}")
+
+   
+    def _load_all_settings(self):
+        settings = {}
+        try:
+            with open(self.settings_file, 'r') as f:
+                for line in f:
+                    if "|" in line:
+                        k, v = line.strip().split("|")
+                        settings[k.strip()] = v.strip()
+        except FileNotFoundError:
+            pass
+        return settings
+
+    def _save_all_settings(self, settings):
+        with open(self.settings_file, 'w') as f:
+            for k, v in settings.items():
+                f.write(f"{k} | {v}\n")
 
 
 if __name__ == "__main__":
     sys = SecuritySystem()
 
     
-    sys.login("Alice", "Student")
-    sys.student_page()   
-    sys.admin_page()     
-
-    
-    sys.login("Bob", "Lecturer")
-    sys.add_course()     
+    student_user = {"username": "Alice", "user_type": "student"}
+    sys.set_session(student_user)
     sys.update_setting("system_name", "Hacked LMS") 
-
     
-    sys.login("Charlie", "Admin")
-    sys.admin_page()     
-    sys.update_setting("max_quiz_attempts", 10)
+    admin_user = {"username": "Charlie", "user_type": "admin"}
+    sys.set_session(admin_user)
+    sys.update_setting("max_quiz_attempts", 10) 
     sys.view_all_settings()
