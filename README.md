@@ -1,6 +1,9 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 # CapstoneProject
 =======
+=======
+>>>>>>> Stashed changes
 # CapstoneProject
 
 Capstone Assignment Private assignment for Sem5
@@ -17,4 +20,7 @@ Capstone Assignment Private assignment for Sem5
 1. Each contributer will have their own sub branch
 2. Edits on the Main branch can only be made by Kwok Xing Wei, any edits will need permission.
 3. Do NOT Force push any commits.
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
