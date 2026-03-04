@@ -1,5 +1,0 @@
-rewardId|rewardName|cost|stock
-R01|5% Discount Voucher|100|50
-R02|Bonus Quiz Skip|150|30
-R03|Certificate Badge|200|999
-R04|Extra Attempt Pass|250|20
