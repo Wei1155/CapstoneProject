@@ -1,0 +1,7 @@
+E001 | S001 | Fred Bear | C001 | Python Basics | 30% | In Progress
+E002 | S002 | Havin Tim | C002 | AI Fundamentals | 100% | Completed
+E002 | S002 | Havin Tim | C001 | Python Basics | 10% | In Progress
+E003 | S003 | Will Wonka | C001 | Python Basics | 0% | Pending
+E004 | S004 | Sasha Cross | C003 | Data Science 101 | 50% | In Progress
+E005 | S005 | Donald John | C004 | Machine Learning | 75% | In Progress
+E007 | S002 | Havin Tim | C004 | Machine Learning | 0% | In Progress

@@ -24,6 +24,16 @@ def read_users():
         print(f"{filename} not found!")
     return users
 
+def write_users(users):
+    filename = "admin_profiles/users.txt"
+    with open(filename, 'w') as file:
+        for i, user in enumerate(users):
+            line = f"{user['userID']} | {user['username']} | {user['first_name']} | {user['last_name']} | {user['email']} | {user['password']} | {user['user_type']}"
+            if i < len(users) - 1:
+                file.write(line + "\n")
+            else:
+                file.write(line)
+
 
 def generate_user_id(user_type, users):
     prefix_map = {"admin": "A", "student": "S", "instructor": "I"}
@@ -34,3 +44,81 @@ def generate_user_id(user_type, users):
     else:
         number = max(int(uid[1:]) for uid in existing_ids) + 1
     return f"{prefix}{str(number).zfill(3)}"
+
+
+def read_enrollments():
+    enrollments = []
+    filename = "admin_profiles/enrollments.txt"  # correct folder
+
+    try:
+        with open(filename, "r") as file:
+            for line in file:
+                line = line.strip()
+                if not line:  # skip empty lines
+                    continue
+
+                cols = [col.strip() for col in line.split("|")]
+                if len(cols) != 7:
+                    print(f"Skipping invalid line: {line}")
+                    continue
+
+                enrollment = {
+                    "enrollment_id": cols[0],
+                    "student_id": cols[1],
+                    "student_name": cols[2],
+                    "course_id": cols[3],
+                    "course_name": cols[4],
+                    "progress": cols[5],
+                    "status": cols[6]
+                }
+                enrollments.append(enrollment)
+
+    except FileNotFoundError:
+        print(f"{filename} not found!")
+
+    return enrollments
+
+def write_enrollments(enrollments):
+    filename = "admin_profiles/enrollments.txt"
+    with open(filename, "w") as file:
+        for e in enrollments:
+            line = " | ".join([
+                e["enrollment_id"],
+                e["student_id"],
+                e["student_name"],
+                e["course_name"],
+                e["progress"],
+                e["status"]
+            ])
+            file.write(line + "\n")
+
+# database.py
+
+def read_courses():
+
+    courses = []
+    filename = "admin_profiles/courses.txt"  # adjust path if courses.txt is here
+
+    try:
+        with open(filename, "r") as file:
+            for line in file:
+                line = line.strip()
+                if not line:  # skip empty lines
+                    continue
+
+                cols = [col.strip() for col in line.split("|")]
+                if len(cols) != 3:
+                    print(f"Skipping invalid line: {line}")
+                    continue
+
+                course = {
+                    "course_id": cols[0],
+                    "course_name": cols[1],
+                    "status": cols[2]  # Open / Closed
+                }
+                courses.append(course)
+
+    except FileNotFoundError:
+        print(f"{filename} not found!")
+
+    return courses

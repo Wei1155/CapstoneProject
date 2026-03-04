@@ -1,6 +1,10 @@
-def instructor_menu(profile):
+from auth.profile_management import view_and_edit_profile
+from admin.admin_enrollment import view_all_enrollments
+
+
+def instructor_menu(current_user):
     while True:
-        print(f"\n=== Instructor Menu ({profile['first_name']} {profile['last_name']}) ===")
+        print(f"\n=== Instructor Menu ({current_user['first_name']} {current_user['last_name']}) ===")
         print("1. View/Edit Profile")
         print("2. Track Student Enrollment")
         print("3. Manage Courses (coming soon)")
@@ -12,9 +16,9 @@ def instructor_menu(profile):
         choice = input("Select an option: ").strip()
 
         if choice == "1":
-            print("[Placeholder] View/Edit Profile")
+            view_and_edit_profile(current_user)
         elif choice == "2":
-            print("[Placeholder] Track Student Enrollment")
+            view_all_enrollments()
         elif choice == "3":
             print("[Placeholder] Manage Courses")
         elif choice == "4":

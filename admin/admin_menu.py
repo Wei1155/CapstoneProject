@@ -1,32 +1,40 @@
-def admin_menu(profile):
+from auth.profile_management import view_and_edit_profile
+from admin.admin_enrollment import view_all_enrollments
+
+
+
+def admin_menu(current_user):
     while True:
-        print(f"\n=== Admin Menu ({profile['first_name']} {profile['last_name']}) ===")
+        print(f"\n=== Admin Menu ({current_user['first_name']} {current_user['last_name']}) ===")
         print("1. User Administration")
         print("2. View/Edit Profile")
-        print("3. Content Moderation (coming soon)")   # 5.2
-        print("4. Gamification Control (coming soon)")  # 5.3
-        print("5. System Monitoring (coming soon)")     # 5.4
-        print("6. Security & Settings (coming soon)")   # 5.5
-        print("7. Reporting & Analytics (coming soon)") # 4.0
-        print("8. Logout")
+        print("3. View All Enrollments")
+        print("4. Content Moderation (coming soon)")
+        print("5. Gamification Control (coming soon)")
+        print("6. System Monitoring (coming soon)")
+        print("7. Security & Settings (coming soon)")
+        print("8. Reporting & Analytics (coming soon)")
+        print("9. Logout")
 
         choice = input("Select an option: ").strip()
 
         if choice == "1":
             print("[Placeholder] User Administration")  # your own code for 5.1
         elif choice == "2":
-            print("[Placeholder] View/Edit Profile")
+            view_and_edit_profile(current_user)
         elif choice == "3":
-            print("[Placeholder] Content Moderation")
+            view_all_enrollments()
         elif choice == "4":
-            print("[Placeholder] Gamification Control")
+            print("[Placeholder] Content Moderation (coming soon)")
         elif choice == "5":
-            print("[Placeholder] System Monitoring")
+            print("[Placeholder] Gamification Control (coming soon)")
         elif choice == "6":
-            print("[Placeholder] Security & Settings")
+            print("[Placeholder] System Monitoring (coming soon)")
         elif choice == "7":
-            print("[Placeholder] Reporting & Analytics")
+            print("[Placeholder] Security & Settings (coming soon)")
         elif choice == "8":
+            print("[Placeholder] Reporting & Analytics (coming soon)")
+        elif choice == "9":
             print("Logging out...")
             break
         else:
