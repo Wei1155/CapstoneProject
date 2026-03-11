@@ -1,4 +1,0 @@
-C001 | Python Basics | Open
-C002 | AI Fundamentals | Open
-C003 | Data Science 101 | Closed
-C004 | Machine Learning | Open
