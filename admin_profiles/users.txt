@@ -1,9 +1,0 @@
-S001 | FredTheBear | Fred | Bear | fred@gmail.com | FredTheBear234 | student
-S002 | TimDriver | Tim | Driver | tim@gmail.com | T1m0th33 | student
-S003 | WillW | Will | Wonka | will@gmail.com | WillyW0nka | student
-S004 | SashaAnimal | Sasha | Cross | sashaanimalcrossing@mail.com | SashaTh3An1mal | student
-S005 | DonalJ | Donal | John | donal.john@gmail.com | 1mG0nnaB3Th3Pr3sident | student
-I001 | JoeInstructor | Joe | Simpson | joe.simpson@gmail.com | d0naldDuk15myfav | instructor
-S006 | Fiyero | Fiyero | Flyer | fiyero@gmail.com | therea1Fiyero | student
-A001 | AdminMaster | Alice | Admin | admin.1@gmail.com | AdminPassw0rd | admin
-A002 | WinnieAdmin | Winnie | Pooh | winnieThePooh@gmail.com | WinnieTheP00h | admin
