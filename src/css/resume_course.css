@@ -1,2 +1,284 @@
 
 
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #1f2937;
+}
+
+/* LAYOUT */
+.dashboard-page {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, #4f46e5, #7c3aed);
+    color: white;
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 35px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 12px;
+    transition: 0.2s ease;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+/* MAIN */
+.main-content {
+    flex: 1;
+    padding: 28px;
+}
+
+/* TOPBAR */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.topbar-title h1 {
+    font-size: 30px;
+    margin-bottom: 6px;
+}
+
+.topbar-title p {
+    color: #6b7280;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-btn {
+    border: none;
+    background: white;
+    padding: 12px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.profile-chip {
+    background: white;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-chip img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* RESUME SECTION */
+.resume-section {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+/* BACK BUTTON */
+.resume-top-actions {
+    margin-bottom: 22px;
+}
+
+.back-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    color: white;
+    font-weight: bold;
+}
+
+/* CARD */
+.resume-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 28px;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* HEADER */
+.resume-card-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.resume-card-header h2 {
+    font-size: 32px;
+}
+
+/* PROGRESS */
+.resume-progress-area {
+    padding: 28px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.resume-progress-area h3 {
+    font-size: 22px;
+    margin-bottom: 18px;
+}
+
+.resume-progress-bar {
+    width: 420px;
+    max-width: 100%;
+    height: 20px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid #d1d5db;
+}
+
+.resume-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+/* LESSON SECTION */
+.lesson-section {
+    padding: 28px;
+}
+
+.lesson-section h3 {
+    font-size: 28px;
+    margin-bottom: 18px;
+}
+
+/* LESSON LIST */
+.lesson-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.lesson-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.lesson-row:last-child {
+    border-bottom: none;
+}
+
+/* LEFT SIDE */
+.lesson-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.lesson-status {
+    width: 34px;
+    text-align: center;
+    font-size: 22px;
+}
+
+.lesson-title {
+    font-size: 22px;
+    color: #111827;
+}
+
+/* BUTTONS */
+.lesson-btn {
+    padding: 10px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    color: white;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.completed-btn {
+    background: #10b981;
+    color: white;
+}
+
+.disabled-btn {
+    background: #d1d5db;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+/* EMPTY TEXT */
+.empty-text {
+    color: #6b7280;
+    font-size: 18px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1000px) {
+    .dashboard-page {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .lesson-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .resume-card-header h2 {
+        font-size: 24px;
+    }
+
+    .lesson-title {
+        font-size: 18px;
+    }
+}
