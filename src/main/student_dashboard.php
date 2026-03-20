@@ -1,14 +1,92 @@
 <?php
 session_start();
+include 'db_connection.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != "Student") {
     header("Location: login.php");
     exit();
 }
 
+$userId = $_SESSION['user_id'];
 $firstName = $_SESSION['first_name'];
-$username = $_SESSION['username'];
+$lastName = $_SESSION['last_name'];
+$fullName = $firstName . " " . $lastName;
 $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'] : 'default_profile.png';
+
+/* Default values */
+$xp = 0;
+$level = 1;
+$rank = 0;
+$badges = 0;
+
+$courses = [];
+$activities = [];
+$leaderboard = [];
+
+/* Get student progress */
+$progressStmt = $conn->prepare("SELECT xp, level, rank_position, badges_count FROM student_progress WHERE user_id = ?");
+$progressStmt->bind_param("i", $userId);
+$progressStmt->execute();
+$progressResult = $progressStmt->get_result();
+
+if ($progressResult->num_rows > 0) {
+    $progressRow = $progressResult->fetch_assoc();
+    $xp = $progressRow['xp'];
+    $level = $progressRow['level'];
+    $rank = $progressRow['rank_position'];
+    $badges = $progressRow['badges_count'];
+}
+$progressStmt->close();
+
+/* Get enrolled courses and progress */
+$courseStmt = $conn->prepare("
+    SELECT courses.course_title, enrollments.progress
+    FROM enrollments
+    INNER JOIN courses ON enrollments.course_id = courses.course_id
+    WHERE enrollments.user_id = ?
+");
+$courseStmt->bind_param("i", $userId);
+$courseStmt->execute();
+$courseResult = $courseStmt->get_result();
+
+while ($row = $courseResult->fetch_assoc()) {
+    $courses[] = $row;
+}
+$courseStmt->close();
+
+/* Get recent activity */
+$activityStmt = $conn->prepare("
+    SELECT activity_text
+    FROM activity_logs
+    WHERE user_id = ?
+    ORDER BY created_at DESC
+    LIMIT 5
+");
+$activityStmt->bind_param("i", $userId);
+$activityStmt->execute();
+$activityResult = $activityStmt->get_result();
+
+while ($row = $activityResult->fetch_assoc()) {
+    $activities[] = $row['activity_text'];
+}
+$activityStmt->close();
+
+/* Get leaderboard */
+$leaderboardStmt = $conn->prepare("
+    SELECT users.first_name, users.last_name, student_progress.xp
+    FROM student_progress
+    INNER JOIN users ON student_progress.user_id = users.user_id
+    WHERE users.role = 'Student'
+    ORDER BY student_progress.xp DESC
+    LIMIT 5
+");
+$leaderboardStmt->execute();
+$leaderboardResult = $leaderboardStmt->get_result();
+
+while ($row = $leaderboardResult->fetch_assoc()) {
+    $leaderboard[] = $row;
+}
+$leaderboardStmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,12 +104,12 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
 
             <nav class="sidebar-nav">
                 <a href="#" class="active">Dashboard</a>
-                <a href="#">Courses</a>
+                <a href="all_courses.php">Courses</a>
                 <a href="#">Quests</a>
                 <a href="#">Rewards</a>
                 <a href="#">Library</a>
                 <a href="#">Logs</a>
-                <a href="#">Settings</a>
+                <a href="profile.php">Settings</a>
                 <a href="logout.php">Logout</a>
             </nav>
         </aside>
@@ -40,15 +118,16 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
             <header class="topbar">
                 <div class="topbar-title">
                     <h1>Student Dashboard</h1>
-                    <p>Welcome back, <?php echo htmlspecialchars($firstName); ?>.</p>
+                    <p>Welcome back, <?php echo htmlspecialchars($fullName); ?>.</p>
                 </div>
 
                 <div class="topbar-actions">
                     <input type="text" placeholder="Search courses, quests..." class="search-input">
                     <button class="icon-btn">🔔</button>
+
                     <div class="profile-chip">
                         <img src="../media/<?php echo htmlspecialchars($profilePic); ?>" alt="Profile">
-                        <span><?php echo htmlspecialchars($username); ?></span>
+                        <span><?php echo htmlspecialchars($fullName); ?></span>
                     </div>
                 </div>
             </header>
@@ -56,26 +135,26 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
             <section class="stats-grid">
                 <div class="stat-card">
                     <span class="stat-label">XP</span>
-                    <h3>1,250</h3>
-                    <p>+120 this week</p>
+                    <h3><?php echo htmlspecialchars($xp); ?></h3>
+                    <p>Your total experience points</p>
                 </div>
 
                 <div class="stat-card">
                     <span class="stat-label">Level</span>
-                    <h3>5</h3>
-                    <p>2 quests to next level</p>
+                    <h3><?php echo htmlspecialchars($level); ?></h3>
+                    <p>Your current level</p>
                 </div>
 
                 <div class="stat-card">
                     <span class="stat-label">Rank</span>
-                    <h3>#12</h3>
-                    <p>Top 15%</p>
+                    <h3>#<?php echo htmlspecialchars($rank); ?></h3>
+                    <p>Your current leaderboard rank</p>
                 </div>
 
                 <div class="stat-card">
                     <span class="stat-label">Badges</span>
-                    <h3>8</h3>
-                    <p>1 new badge earned</p>
+                    <h3><?php echo htmlspecialchars($badges); ?></h3>
+                    <p>Total badges earned</p>
                 </div>
             </section>
 
@@ -83,48 +162,28 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
                 <div class="card continue-card">
                     <div class="card-header">
                         <h2>Continue Learning</h2>
-                        <a href="#">View all</a>
+                        <a href="my_courses.php">View all</a>
                     </div>
 
                     <div class="course-progress">
-                        <div class="course-row">
-                            <div class="course-info">
-                                <h4>Course 1</h4>
-                                <span>Web Development Basics</span>
-                            </div>
-                            <div class="progress-wrap">
-                                <div class="progress-bar">
-                                    <div class="progress-fill fill-75"></div>
+                        <?php if (count($courses) > 0) { ?>
+                            <?php foreach ($courses as $course) { ?>
+                                <div class="course-row">
+                                    <div class="course-info">
+                                        <h4><?php echo htmlspecialchars($course['course_title']); ?></h4>
+                                        <span>Your current progress</span>
+                                    </div>
+                                    <div class="progress-wrap">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: <?php echo (int)$course['progress']; ?>%;"></div>
+                                        </div>
+                                        <small><?php echo (int)$course['progress']; ?>%</small>
+                                    </div>
                                 </div>
-                                <small>75%</small>
-                            </div>
-                        </div>
-
-                        <div class="course-row">
-                            <div class="course-info">
-                                <h4>Course 2</h4>
-                                <span>Database Fundamentals</span>
-                            </div>
-                            <div class="progress-wrap">
-                                <div class="progress-bar">
-                                    <div class="progress-fill fill-50"></div>
-                                </div>
-                                <small>50%</small>
-                            </div>
-                        </div>
-
-                        <div class="course-row">
-                            <div class="course-info">
-                                <h4>Course 3</h4>
-                                <span>UI/UX Design Principles</span>
-                            </div>
-                            <div class="progress-wrap">
-                                <div class="progress-bar">
-                                    <div class="progress-fill fill-30"></div>
-                                </div>
-                                <small>30%</small>
-                            </div>
-                        </div>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <p>No enrolled courses yet.</p>
+                        <?php } ?>
                     </div>
                 </div>
 
@@ -134,10 +193,19 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
                     </div>
 
                     <ol class="leaderboard-list">
-                        <li><span>Alex</span><strong>2450 XP</strong></li>
-                        <li><span>Sarah</span><strong>2320 XP</strong></li>
-                        <li><span>John</span><strong>2210 XP</strong></li>
-                        <li><span>You</span><strong>1250 XP</strong></li>
+                        <?php if (count($leaderboard) > 0) { ?>
+                            <?php foreach ($leaderboard as $leader) { ?>
+                                <li>
+                                    <span><?php echo htmlspecialchars($leader['first_name'] . " " . $leader['last_name']); ?></span>
+                                    <strong><?php echo htmlspecialchars($leader['xp']); ?> XP</strong>
+                                </li>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <li>
+                                <span>No leaderboard data</span>
+                                <strong>0 XP</strong>
+                            </li>
+                        <?php } ?>
                     </ol>
                 </div>
             </section>
@@ -148,10 +216,13 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
                 </div>
 
                 <ul class="activity-list">
-                    <li>Completed Quiz 1 in Web Development Basics</li>
-                    <li>Earned the “Fast Learner” badge</li>
-                    <li>Reached Level 5</li>
-                    <li>Finished Module 3 of Database Fundamentals</li>
+                    <?php if (count($activities) > 0) { ?>
+                        <?php foreach ($activities as $activity) { ?>
+                            <li><?php echo htmlspecialchars($activity); ?></li>
+                        <?php } ?>
+                    <?php } else { ?>
+                        <li>No recent activity yet.</li>
+                    <?php } ?>
                 </ul>
             </section>
         </main>

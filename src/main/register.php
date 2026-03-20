@@ -13,36 +13,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = trim($_POST['password']);
     $confirmPassword = trim($_POST['confirm_password']);
 
-    if ($password != $confirmPassword) {
-        $error = "Passwords do not match";
+    $profilePicture = "default_profile.png";
+    $role = "Student";
+
+    if ($username == "" || $firstName == "" || $lastName == "" || $email == "" || $password == "" || $confirmPassword == "") {
+        $error = "Please fill in all fields.";
+    } elseif ($password != $confirmPassword) {
+        $error = "Passwords do not match.";
     } else {
 
-        $checkStmt = $conn->prepare("SELECT * FROM students WHERE email=? OR username=?");
+        $checkStmt = $conn->prepare("SELECT * FROM users WHERE email = ? OR username = ?");
         $checkStmt->bind_param("ss", $email, $username);
         $checkStmt->execute();
         $result = $checkStmt->get_result();
 
         if ($result->num_rows > 0) {
-
-            $error = "Email or username already exists";
-
+            $error = "Email or username already exists.";
         } else {
 
-            $insertStmt = $conn->prepare("INSERT INTO students (username, first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?)");
-            $insertStmt->bind_param("sssss", $username, $firstName, $lastName, $email, $password);
+            $insertStmt = $conn->prepare("INSERT INTO users (username, first_name, last_name, email, password, profile_picture, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $insertStmt->bind_param("sssssss", $username, $firstName, $lastName, $email, $password, $profilePicture, $role);
 
             if ($insertStmt->execute()) {
 
-                // AUTO LOGIN
+                session_unset();
+
+                $_SESSION['user_id'] = $conn->insert_id;
                 $_SESSION['username'] = $username;
                 $_SESSION['first_name'] = $firstName;
                 $_SESSION['last_name'] = $lastName;
+                $_SESSION['email'] = $email;
+                $_SESSION['profile_picture'] = $profilePicture;
+                $_SESSION['role'] = $role;
 
-                header("Location: dashboard.php");
+                header("Location: student_dashboard.php");
                 exit();
 
             } else {
-                $error = "Registration failed";
+                $error = "Registration failed.";
             }
 
             $insertStmt->close();
@@ -55,12 +63,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Register - Gamified E-Learning</title>
     <link rel="stylesheet" href="../css/login.css">
 </head>
-
 <body>
 
 <div class="login-box">
@@ -68,11 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2>Create Account</h2>
     <p>Join the Gamified E-Learning System</p>
 
-    <?php
-    if ($error != "") {
-        echo "<p style='color:red;'>$error</p>";
-    }
-    ?>
+    <?php if ($error != "") { ?>
+        <p style="color:red;"><?php echo $error; ?></p>
+    <?php } ?>
 
     <form method="POST">
 
@@ -100,12 +104,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <p class="register-text">
         Already have an account? <a href="login.php">Login</a>
-    </p>
-
-</div>
-
-</body>
-</html>
     </p>
 
 </div>
