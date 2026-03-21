@@ -31,7 +31,7 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
                 <a href="#">Students</a>
                 <a href="#">Quizzes</a>
                 <a href="#">Library</a>
-                <a href="#">Settings</a>
+                <a href="profile.php">Settings</a>
                 <a href="logout.php">Logout</a>
             </nav>
         </aside>

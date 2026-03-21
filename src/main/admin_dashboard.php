@@ -25,12 +25,12 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
             <div class="sidebar-logo">GamiLearn</div>
 
             <nav class="sidebar-nav">
-                <a href="#" class="active">Dashboard</a>
-                <a href="#">Users</a>
-                <a href="#">Courses</a>
-                <a href="#">Reports</a>
-                <a href="#">Logs</a>
-                <a href="#">Settings</a>
+                <a href="admin_dashboard.php" class="active">Dashboard</a>
+                <a href="admin_users.php">Users</a>
+                <a href="create_course.php">Courses</a>
+                <a href="generate_report.php">Reports</a>
+                <a href="view_logs.php">Logs</a>
+                <a href="profile.php">Settings</a>
                 <a href="logout.php">Logout</a>
             </nav>
         </aside>
@@ -123,10 +123,10 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
                     </div>
 
                     <div class="quick-actions">
-                        <button class="action-btn">Add User</button>
-                        <button class="action-btn">Create Course</button>
-                        <button class="action-btn">Generate Report</button>
-                        <button class="action-btn">View Logs</button>
+                        <a href="add_user.php" class="action-btn">Add User</a>
+                        <a href="create_course.php" class="action-btn">Create Course</a>
+                        <a href="generate_report.php" class="action-btn">Generate Report</a>
+                        <a href="view_logs.php" class="action-btn">View Logs</a>
                     </div>
                 </div>
 

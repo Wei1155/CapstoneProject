@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 include 'db_connection.php';
 
@@ -11,12 +14,21 @@ $userId = $_SESSION['user_id'];
 $error = "";
 
 /* Load current user info */
-$stmt = $conn->prepare("SELECT username, first_name, last_name, email, profile_picture, role, password FROM users WHERE user_id = ?");
+$stmt = $conn->prepare("
+    SELECT username, first_name, last_name, email, profile_picture, role
+    FROM users
+    WHERE user_id = ?
+");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
+
+if (!$user) {
+    header("Location: login.php");
+    exit();
+}
 
 $profilePic = !empty($user['profile_picture']) ? $user['profile_picture'] : 'default_profile.png';
 $fullName = $user['first_name'] . " " . $user['last_name'];
@@ -50,9 +62,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         }
 
-        /* Check duplicate username only if username changed */
         if ($usernameChanged) {
-            $checkStmt = $conn->prepare("SELECT user_id FROM users WHERE username = ? AND user_id != ?");
+            $checkStmt = $conn->prepare("
+                SELECT user_id
+                FROM users
+                WHERE username = ? AND user_id != ?
+            ");
             $checkStmt->bind_param("si", $username, $userId);
             $checkStmt->execute();
             $checkResult = $checkStmt->get_result();
@@ -71,7 +86,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } elseif ($newPassword != $confirmPassword) {
                     $error = "New password and confirm password do not match.";
                 } else {
-                    $updateStmt = $conn->prepare("UPDATE users SET username = ?, first_name = ?, last_name = ?, password = ? WHERE user_id = ?");
+                    $updateStmt = $conn->prepare("
+                        UPDATE users
+                        SET username = ?, first_name = ?, last_name = ?, password = ?
+                        WHERE user_id = ?
+                    ");
                     $updateStmt->bind_param("ssssi", $username, $firstName, $lastName, $newPassword, $userId);
 
                     if ($updateStmt->execute()) {
@@ -88,7 +107,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $updateStmt->close();
                 }
             } else {
-                $updateStmt = $conn->prepare("UPDATE users SET username = ?, first_name = ?, last_name = ? WHERE user_id = ?");
+                $updateStmt = $conn->prepare("
+                    UPDATE users
+                    SET username = ?, first_name = ?, last_name = ?
+                    WHERE user_id = ?
+                ");
                 $updateStmt->bind_param("sssi", $username, $firstName, $lastName, $userId);
 
                 if ($updateStmt->execute()) {
@@ -108,8 +131,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-/* Reload fresh info */
-$stmt = $conn->prepare("SELECT username, first_name, last_name, email, profile_picture, role FROM users WHERE user_id = ?");
+/* Reload fresh data */
+$stmt = $conn->prepare("
+    SELECT username, first_name, last_name, email, profile_picture, role
+    FROM users
+    WHERE user_id = ?
+");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
