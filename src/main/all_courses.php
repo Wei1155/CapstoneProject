@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 include 'db_connection.php';
 
@@ -203,6 +206,18 @@ while ($row = $categoryResult->fetch_assoc()) {
                         <?php } ?>
                     </div>
                 </div>
+
+                <?php
+                if (isset($_SESSION['course_success'])) {
+                    echo "<div class='success-msg'>" . $_SESSION['course_success'] . "</div>";
+                    unset($_SESSION['course_success']);
+                }
+
+                if (isset($_SESSION['course_error'])) {
+                    echo "<div class='error-msg'>" . $_SESSION['course_error'] . "</div>";
+                    unset($_SESSION['course_error']);
+                }
+                ?>
 
                 <div class="course-list-card">
                     <?php if (count($courses) > 0) { ?>

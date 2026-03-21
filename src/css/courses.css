@@ -457,6 +457,26 @@ body {
     display: inline-block;
 }
 
+.success-msg {
+    background: #dcfce7;
+    color: #166534;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    border: 1px solid #bbf7d0;
+}
+
+.error-msg {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    border: 1px solid #fecaca;
+}
+
 @media (max-width: 900px) {
     .my-course-bottom {
         flex-direction: column;
