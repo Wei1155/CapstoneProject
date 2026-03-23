@@ -1,86 +1,63 @@
-import os
+import java.sql.*;
+import java.util.*;
 
-class SecuritySystem:
-    def __init__(self):
-        self.settings_file = "admin_profiles/settings.txt"
-        self.current_user = None
-        self._init_settings()
+public class SecuritySystem {
+    private final String url = "jdbc:mysql://localhost:3306/lms_db";
+    private final String user = "root";
+    private final String password = "";
+    private Map<String, String> currentUser = null;
 
-    def _init_settings(self):
-        if not os.path.exists("admin_profiles"):
-            os.makedirs("admin_profiles")
-        
-        if not os.path.exists(self.settings_file):
-            default_settings = {
-                "system_name": "Learning Management System",
-                "enable_leaderboard": "True",
-                "max_quiz_attempts": "3"
+    public void setSession(Map<String, String> userDict) {
+        this.currentUser = userDict;
+    }
+
+    private boolean checkAccess(String[] allowedRoles) {
+        if (currentUser == null) {
+            System.out.println(" Access Denied: Please login first.");
+            return false;
+        }
+        String userRole = currentUser.getOrDefault("user_type", "unknown").toLowerCase();
+        for (String role : allowedRoles) {
+            if (role.toLowerCase().equals(userRole)) return true;
+        }
+        System.out.println(" Permission Denied: " + userRole + " cannot access this function.");
+        return false;
+    }
+
+    public void updateSetting(String key, String value) {
+        if (!checkAccess(new String[]{"admin"})) return;
+        String sql = "INSERT INTO system_settings (config_key, config_value) VALUES (?, ?) " +
+                     "ON DUPLICATE KEY UPDATE config_value = VALUES(config_value)";
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, key);
+            pstmt.setString(2, value);
+            pstmt.executeUpdate();
+            System.out.println("⚙️ Config Updated: " + key + " = " + value);
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    public void viewAllSettings() {
+        System.out.println("\n" + "-".repeat(15) + " SYSTEM CONFIGURATION " + "-".repeat(15));
+        String sql = "SELECT * FROM system_settings";
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                System.out.println(rs.getString("config_key") + ": " + rs.getString("config_value"));
             }
-            self._save_all_settings(default_settings)
+        } catch (SQLException e) { e.printStackTrace(); }
+        System.out.println("-".repeat(55));
+    }
 
-    
-    @staticmethod
-    def access_control(allowed_roles):
-        def decorator(func):
-            def wrapper(self, *args, **kwargs):
-                if not self.current_user:
-                    print("❌ Access Denied: Please login first.")
-                    return
-                user_role = self.current_user.get('user_type', '').lower()
-                allowed_roles_lower = [r.lower() for r in allowed_roles]
-                
-                if user_role in allowed_roles_lower:
-                    return func(self, *args, **kwargs)
-                else:
-                    print(f"🚫 Permission Denied: {user_role} cannot access this.")
-            return wrapper
-        return decorator
-
-    def set_session(self, user_dict):
-        self.current_user = user_dict
-        if user_dict:
-            print(f"\n[Session] Active user: {user_dict['username']} ({user_dict['user_type']})")
-
-    @access_control(allowed_roles=["admin"])
-    def update_setting(self, key, value):
-        settings = self._load_all_settings()
-        settings[key] = str(value)
-        self._save_all_settings(settings)
-        print(f"⚙️ Config Updated in {self.settings_file}: {key} = {value}")
-
-    def get_setting(self, key):
-        settings = self._load_all_settings()
-        return settings.get(key)
-
-    def view_all_settings(self):
-        settings = self._load_all_settings()
-        print("\n--- Current System Configuration (from TXT) ---")
-        for k, v in settings.items():
-            print(f"{k}: {v}")
-
-    def _load_all_settings(self):
-        settings = {}
-        try:
-            with open(self.settings_file, 'r') as f:
-                for line in f:
-                    if "|" in line:
-                        k, v = line.strip().split("|")
-                        settings[k.strip()] = v.strip()
-        except FileNotFoundError:
-            pass
-        return settings
-
-    def _save_all_settings(self, settings):
-        with open(self.settings_file, 'w') as f:
-            for k, v in settings.items():
-                f.write(f"{k} | {v}\n")
-
-if __name__ == "__main__":
-    sys = SecuritySystem()
-    student_user = {"username": "Alice", "user_type": "student"}
-    sys.set_session(student_user)
-    sys.update_setting("system_name", "Hacked LMS") 
-    admin_user = {"username": "Charlie", "user_type": "admin"}
-    sys.set_session(admin_user)
-    sys.update_setting("max_quiz_attempts", 10) 
-    sys.view_all_settings()
+    public String getSetting(String key) {
+        String sql = "SELECT config_value FROM system_settings WHERE config_key = ?";
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, key);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) return rs.getString("config_value");
+        } catch (SQLException e) { e.printStackTrace(); }
+        return null;
+    }
+}
