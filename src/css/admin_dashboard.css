@@ -87,6 +87,7 @@ body {
     outline: none;
 }
 
+/* BUTTON STYLE */
 .icon-btn {
     border: none;
     background: white;
@@ -96,6 +97,60 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
+/* 🔔 NOTIFICATION FIX */
+.notification-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.notification-btn:link,
+.notification-btn:visited,
+.notification-btn:hover,
+.notification-btn:active {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+/* Bell icon */
+.bell-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* 🔴 RED BADGE */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+
+    min-width: 18px;
+    height: 18px;
+    padding: 2px 6px;
+
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Profile */
 .profile-chip {
     background: white;
     padding: 8px 12px;
@@ -147,7 +202,7 @@ body {
     font-size: 14px;
 }
 
-/* Card base */
+/* Card */
 .card {
     background: white;
     border-radius: 18px;
@@ -166,7 +221,7 @@ body {
     font-size: 22px;
 }
 
-/* Sections */
+/* Layout */
 .content-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -192,10 +247,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.analytics-item span {
-    color: #374151;
 }
 
 .analytics-item strong {
@@ -229,13 +280,6 @@ body {
     color: white;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.action-btn:link,
-.action-btn:visited {
-    text-decoration: none;
-    color: white;
 }
 
 .action-btn:hover {
@@ -243,7 +287,7 @@ body {
     opacity: 0.95;
 }
 
-/* Course list */
+/* Course */
 .course-list {
     display: flex;
     flex-direction: column;
@@ -254,15 +298,6 @@ body {
     background: #f9fafb;
     border-radius: 14px;
     padding: 18px;
-}
-
-.course-item h4 {
-    font-size: 18px;
-    margin-bottom: 6px;
-}
-
-.course-item p {
-    color: #6b7280;
 }
 
 /* Responsive */

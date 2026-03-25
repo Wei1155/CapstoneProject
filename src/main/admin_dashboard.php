@@ -1,14 +1,39 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
+include 'db_connection.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != "Admin") {
     header("Location: login.php");
     exit();
 }
 
+$userId = $_SESSION['user_id'];
 $firstName = $_SESSION['first_name'];
 $username = $_SESSION['username'];
 $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'] : 'default_profile.png';
+
+/* Notification count */
+$notifCount = 0;
+$notifStmt = $conn->prepare("
+    SELECT COUNT(*) AS total
+    FROM notifications
+    WHERE user_id = ? AND is_read = 0
+");
+
+if ($notifStmt) {
+    $notifStmt->bind_param("i", $userId);
+    $notifStmt->execute();
+    $notifResult = $notifStmt->get_result();
+
+    if ($notifRow = $notifResult->fetch_assoc()) {
+        $notifCount = $notifRow['total'];
+    }
+
+    $notifStmt->close();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,8 +53,10 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
                 <a href="admin_dashboard.php" class="active">Dashboard</a>
                 <a href="admin_users.php">Users</a>
                 <a href="create_course.php">Courses</a>
-                <a href="generate_report.php">Reports</a>
+                <a href="view_reports.php">Reports</a>
                 <a href="view_logs.php">Logs</a>
+                <a href="notifications.php">Notifications</a>
+                <a href="system_settings.php">System Settings</a>
                 <a href="profile.php">Settings</a>
                 <a href="logout.php">Logout</a>
             </nav>
@@ -44,7 +71,14 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
 
                 <div class="topbar-actions">
                     <input type="text" placeholder="Search users, courses, reports..." class="search-input">
-                    <button class="icon-btn">🔔</button>
+
+                    <a href="notifications.php" class="icon-btn notification-btn">
+                        <span class="bell-icon">🔔</span>
+                        <?php if ($notifCount > 0) { ?>
+                            <span class="notification-badge"><?php echo $notifCount; ?></span>
+                        <?php } ?>
+                    </a>
+
                     <div class="profile-chip">
                         <img src="../media/<?php echo htmlspecialchars($profilePic); ?>" alt="Profile">
                         <span><?php echo htmlspecialchars($username); ?></span>
@@ -125,7 +159,7 @@ $profilePic = !empty($_SESSION['profile_picture']) ? $_SESSION['profile_picture'
                     <div class="quick-actions">
                         <a href="add_user.php" class="action-btn">Add User</a>
                         <a href="create_course.php" class="action-btn">Create Course</a>
-                        <a href="generate_report.php" class="action-btn">Generate Report</a>
+                        <a href="view_reports.php" class="action-btn">Generate Report</a>
                         <a href="view_logs.php" class="action-btn">View Logs</a>
                     </div>
                 </div>

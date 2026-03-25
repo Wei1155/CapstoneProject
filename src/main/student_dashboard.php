@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 include 'db_connection.php';
 
@@ -8,6 +11,27 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != "Student") {
 }
 
 $userId = $_SESSION['user_id'];
+
+/* Notification count */
+$notifCount = 0;
+$notifStmt = $conn->prepare("
+    SELECT COUNT(*) AS total
+    FROM notifications
+    WHERE user_id = ? AND is_read = 0
+");
+
+if ($notifStmt) {
+    $notifStmt->bind_param("i", $userId);
+    $notifStmt->execute();
+    $notifResult = $notifStmt->get_result();
+
+    if ($notifRow = $notifResult->fetch_assoc()) {
+        $notifCount = $notifRow['total'];
+    }
+
+    $notifStmt->close();
+}
+
 $firstName = $_SESSION['first_name'];
 $lastName = $_SESSION['last_name'];
 $fullName = $firstName . " " . $lastName;
@@ -24,7 +48,11 @@ $activities = [];
 $leaderboard = [];
 
 /* Get student progress */
-$progressStmt = $conn->prepare("SELECT xp, level, rank_position, badges_count FROM student_progress WHERE user_id = ?");
+$progressStmt = $conn->prepare("
+    SELECT xp, level, rank_position, badges_count
+    FROM student_progress
+    WHERE user_id = ?
+");
 $progressStmt->bind_param("i", $userId);
 $progressStmt->execute();
 $progressResult = $progressStmt->get_result();
@@ -103,12 +131,13 @@ $leaderboardStmt->close();
             <div class="sidebar-logo">GamiLearn</div>
 
             <nav class="sidebar-nav">
-                <a href="#" class="active">Dashboard</a>
+                <a href="student_dashboard.php" class="active">Dashboard</a>
                 <a href="all_courses.php">Courses</a>
                 <a href="#">Quests</a>
                 <a href="#">Rewards</a>
                 <a href="#">Library</a>
-                <a href="#">Logs</a>
+                <a href="notifications.php">Notifications</a>
+                <a href="report_issues.php">Report Issue</a>
                 <a href="profile.php">Settings</a>
                 <a href="logout.php">Logout</a>
             </nav>
@@ -123,7 +152,15 @@ $leaderboardStmt->close();
 
                 <div class="topbar-actions">
                     <input type="text" placeholder="Search courses, quests..." class="search-input">
-                    <button class="icon-btn">🔔</button>
+
+                    <a href="notifications.php" class="icon-btn notification-btn">
+                        <span class="bell-icon">🔔</span>
+                        <?php if ($notifCount > 0) { ?>
+                            <span class="notification-badge">
+                                <?php echo $notifCount; ?>
+                            </span>
+                        <?php } ?>
+                    </a>
 
                     <div class="profile-chip">
                         <img src="../media/<?php echo htmlspecialchars($profilePic); ?>" alt="Profile">
