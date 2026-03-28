@@ -104,12 +104,14 @@ $stmt->close();
             <div class="sidebar-logo">GamiLearn</div>
 
             <nav class="sidebar-nav">
-                <a href="student_dashboard.php">Dashboard</a>
-                <a href="all_courses.php" class="active">Courses</a>
-                <a href="#">Quests</a>
-                <a href="#">Rewards</a>
-                <a href="#">Library</a>
-                <a href="#">Logs</a>
+                <a href="student_dashboard.php" class="active">Dashboard</a>
+                <a href="all_courses.php">Courses</a>
+                <a href="quests.php">Quests</a>
+                <a href="rewards.php">Rewards</a>
+                <a href="view_logs.php">Activity Log</a>
+                <a href="library.php">Library</a>
+                <a href="notifications.php">Notifications</a>
+                <a href="report_issues.php">Report Issue</a>
                 <a href="profile.php">Settings</a>
                 <a href="logout.php">Logout</a>
             </nav>

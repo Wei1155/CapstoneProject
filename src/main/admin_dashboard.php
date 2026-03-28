@@ -53,11 +53,11 @@ if ($notifStmt) {
                 <a href="admin_dashboard.php" class="active">Dashboard</a>
                 <a href="admin_users.php">Users</a>
                 <a href="create_course.php">Courses</a>
-                <a href="view_reports.php">Reports</a>
-                <a href="view_logs.php">Logs</a>
+                <a href="generate_report.php">Reports</a>
+                <a href="view_logs.php">Activity Log</a>
                 <a href="notifications.php">Notifications</a>
                 <a href="system_settings.php">System Settings</a>
-                <a href="profile.php">Settings</a>
+                <a href="profile.php">Profile</a>
                 <a href="logout.php">Logout</a>
             </nav>
         </aside>

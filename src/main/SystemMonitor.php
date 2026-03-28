@@ -88,13 +88,44 @@ class SystemMonitor {
                 activity_logs.created_at,
                 users.username,
                 users.first_name,
-                users.last_name
+                users.last_name,
+                users.role
             FROM activity_logs
             LEFT JOIN users ON activity_logs.user_id = users.user_id
             ORDER BY activity_logs.created_at DESC
         ");
 
         return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getUserLogs($userId) {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                activity_logs.log_id,
+                activity_logs.user_id,
+                activity_logs.activity_text,
+                activity_logs.created_at,
+                users.username,
+                users.first_name,
+                users.last_name,
+                users.role
+            FROM activity_logs
+            LEFT JOIN users ON activity_logs.user_id = users.user_id
+            WHERE activity_logs.user_id = ?
+            ORDER BY activity_logs.created_at DESC
+        ");
+
+        if (!$stmt) {
+            die("User Log Error: " . $this->conn->error);
+        }
+
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $logs = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $logs;
     }
 
     public function getAllReports() {

@@ -103,10 +103,6 @@ if ($totalLessons > 0) {
             <nav class="sidebar-nav">
                 <a href="student_dashboard.php">Dashboard</a>
                 <a href="all_courses.php" class="active">Courses</a>
-                <a href="#">Quests</a>
-                <a href="#">Rewards</a>
-                <a href="#">Library</a>
-                <a href="#">Logs</a>
                 <a href="profile.php">Settings</a>
                 <a href="logout.php">Logout</a>
             </nav>
