@@ -1,2 +1,0 @@
-courseId|courseName|subject|recommendedDays
-C01|Python Basics|Programming|14

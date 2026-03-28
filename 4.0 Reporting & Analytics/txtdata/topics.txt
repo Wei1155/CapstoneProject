@@ -1,3 +1,0 @@
-courseId|topicName|status|dueDate
-C01|Variables|completed|2026-02-22
-C01|Loops|ongoing|2026-02-25

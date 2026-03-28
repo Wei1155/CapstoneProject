@@ -1,2 +1,0 @@
-userId|name|lastLogin|overallScore|totalTime
-U01|Han|2026-03-02|85|120

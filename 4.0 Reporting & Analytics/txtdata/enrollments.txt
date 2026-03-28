@@ -1,2 +1,0 @@
-userId|courseId|completionStatus|registeredDate|timeSpent
-U01|C01|ongoing|2026-02-20|60
