@@ -133,9 +133,9 @@ $leaderboardStmt->close();
             <nav class="sidebar-nav">
                 <a href="student_dashboard.php" class="active">Dashboard</a>
                 <a href="all_courses.php">Courses</a>
-                <a href="#">Quests</a>
+                <a href="quests.php">Quests</a>
                 <a href="#">Rewards</a>
-                <a href="#">Library</a>
+                <a href="library.php">Library</a>
                 <a href="notifications.php">Notifications</a>
                 <a href="report_issues.php">Report Issue</a>
                 <a href="profile.php">Settings</a>

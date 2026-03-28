@@ -54,14 +54,22 @@ body {
 .main-content {
     flex: 1;
     padding: 28px;
+    min-width: 0; /* 🔥 FIX overflow issue */
 }
 
+/* Topbar FIXED */
 .topbar {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px;
     margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.topbar-title {
+    flex: 1;
+    min-width: 0;
 }
 
 .topbar-title h1 {
@@ -77,6 +85,8 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-shrink: 0;
+    margin-left: auto;
 }
 
 /* Profile */
@@ -142,6 +152,9 @@ body {
     font-weight: bold;
     border: none;
     cursor: pointer;
+    display: inline-block;
+    white-space: nowrap; /* 🔥 prevent text breaking */
+    text-align: center;
 }
 
 .search-btn,
@@ -168,6 +181,7 @@ body {
 .user-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 .user-table th,
@@ -175,12 +189,9 @@ body {
     padding: 14px 12px;
     border-bottom: 1px solid #e5e7eb;
     text-align: left;
-
-    /* 🔥 IMPORTANT FIX */
     vertical-align: top;
     white-space: normal;
-    word-break: break-word;
-    max-width: 500px;
+    word-break: normal; /* 🔥 FIX weird text break */
 }
 
 .user-table th {
@@ -188,10 +199,44 @@ body {
     font-weight: bold;
 }
 
-/* Better message readability */
-.user-table td:nth-child(2) {
-    line-height: 1.6;
+.user-table td {
     color: #374151;
+    line-height: 1.6;
+}
+
+/* 🔥 Column Fix (IMPORTANT) */
+.user-table th:nth-child(1),
+.user-table td:nth-child(1) {
+    width: 70px;
+    min-width: 70px;
+    white-space: nowrap;
+}
+
+.user-table th:nth-child(2),
+.user-table td:nth-child(2) {
+    min-width: 220px;
+}
+
+.user-table th:nth-child(3),
+.user-table td:nth-child(3) {
+    min-width: 320px;
+}
+
+.user-table th:nth-child(4),
+.user-table td:nth-child(4) {
+    min-width: 100px;
+    white-space: nowrap;
+}
+
+.user-table th:nth-child(5),
+.user-table td:nth-child(5) {
+    min-width: 320px;
+}
+
+.user-table th:nth-child(6),
+.user-table td:nth-child(6) {
+    min-width: 160px;
+    white-space: nowrap;
 }
 
 /* Action buttons */
